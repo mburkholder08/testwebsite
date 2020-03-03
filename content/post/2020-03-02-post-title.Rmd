@@ -13,26 +13,142 @@ knitr::opts_chunk$set(collapse = TRUE)
 
 # R Markdown
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-You can embed an R code chunk like this:
+Test
 
 ```{r cars}
-summary(cars)
-fit <- lm(dist ~ speed, data = cars)
-fit
-```
+library(data.table)
+library(sqldf)
+library(plotly)
+library(crosstalk)
+library(DT)
 
-# Including Plots
+##Passing
+Passing <- fread('Career_Stats_Passing.csv', stringsAsFactors = F)
+#Passing <- subset(Passing, Year %in% 2016)
+names(Passing) <- gsub(" ", "_", names(Passing))
+Passing$Passes_Attempted<-as.numeric(Passing$Passes_Attempted)
+Passing$Passes_Completed<-as.numeric(Passing$Passes_Completed)
+Passing$Completion_Percentage<-as.numeric(Passing$Completion_Percentage)
+Passing$Passing_Yards <- as.numeric(gsub(",", "", Passing$Passing_Yards))
+Passing$TD_Passes<-as.numeric(Passing$TD_Passes)
+Passing$Passing_Yards_Per_Game<-as.numeric(Passing$Passing_Yards_Per_Game)
+Passing <- subset(Passing, Year %in% 2016 & Passes_Attempted > 10 & Games_Played>4)
 
-You can also embed plots. See Figure \@ref(fig:pie) for example:
+##Rushing
+Rushing <- fread('Career_Stats_Rushing.csv', stringsAsFactors = F)
+#Rushing <- subset(Rushing, Year %in% 2016)
+names(Rushing) <- gsub(" ", "_", names(Rushing))
+Rushing$Rushing_Attempts<-as.numeric(Rushing$Rushing_Attempts)
+Rushing$Rushing_Yards<- as.numeric(gsub(",", "", Rushing$Rushing_Yards))
+Rushing$Rushing_TDs<-as.numeric(Rushing$Rushing_TDs)
+Rushing <- subset(Rushing, Year %in% 2016 & Rushing_Attempts > 10 & Games_Played>4)
 
-```{r pie, fig.cap='A fancy pie chart.', tidy=FALSE}
-par(mar = c(0, 1, 0, 1))
-pie(
-  c(280, 60, 20),
-  c('Sky', 'Sunny side of pyramid', 'Shady side of pyramid'),
-  col = c('#0292D8', '#F7EA39', '#C4B632'),
-  init.angle = -50, border = NA
+
+##Receiving
+
+Receiving <- fread('Career_Stats_Receiving.csv', stringsAsFactors = F)
+names(Receiving) <- gsub(" ", "_", names(Receiving))
+Receiving$Receptions<-as.numeric(Receiving$Receptions)
+Receiving$Receiving_Yards<- as.numeric(gsub(",", "", Receiving$Receiving_Yards))
+Receiving$Receiving_TDs<-as.numeric(Receiving$Receiving_TDs)
+Receiving <- subset(Receiving, Year %in% 2016 & Receptions > 10 & Games_Played>4)
+
+
+
+all <- merge(Rushing, Receiving, by = "Player_Id", all = T)
+all <- merge(all, Passing, by = "Player_Id", all = T)
+
+all$Position <- ifelse(!is.na(all$Position.x), all$Position.x, all$Position.y)
+all$Position <- ifelse(!is.na(all$Position), all$Position, all$Position)
+all$Position <- ifelse(!is.na(all$Position.x), all$Position.x, all$Position.y)
+all$MAINName <- ifelse(!is.na(all$Name.x), all$Name.x, all$Name.y)
+all$MAINName <- ifelse(!is.na(all$MAINName), all$MAINName, all$Name)
+all$Total_Games_Played <- ifelse(!is.na(all$Games_Played.x), all$Games_Played.x, all$Games_Played.y)
+all$Total_Games_Played <- ifelse(!is.na(all$Total_Games_Played), all$Total_Games_Played, all$Games_Played)
+all$MAINTeam <- ifelse(!is.na(all$Team.x), all$Team.x, all$Team.y)
+all$MAINTeam <- ifelse(!is.na(all$MAINTeam), all$MAINTeam, all$Team)
+
+all$Name <- all$MAINName
+all$Team <- all$MAINTeam
+
+
+#all[,c('Player_Id',56,57,58,7,9,12,25)]
+df<-all[,c('Player_Id', 'Name', 'Position', 'Team','Total_Games_Played', 'Rushing_Attempts','Rushing_Yards', 
+           'Rushing_TDs', 'Receptions', 'Receiving_Yards', 'Receiving_TDs',
+           'Passes_Completed', 'Passing_Yards', 'TD_Passes')]
+df[is.na(df)] <- 0
+df$Position <- gsub('0', 'QB', df$Position)
+df$Position <- gsub('FB', 'RB', df$Position)
+
+
+a <- sqldf("select Player_Id,
+           Name,
+           Position,
+           Team,
+           Total_Games_Played,
+           Rushing_Yards+Receiving_Yards+Passing_Yards as Yards,
+           (Rushing_Yards+Receiving_Yards+Passing_Yards)/Total_Games_Played as AvgYardsPerGame,
+           Rushing_TDs+Receiving_TDs+TD_Passes as Touchdowns,
+           (Rushing_TDs+Receiving_TDs+TD_Passes)/Total_Games_Played as AvgTouchdownsPerGame,
+           Passes_Completed+Receptions+Rushing_Attempts as Completions,
+           (Passes_Completed+Receptions+Rushing_Attempts)/Total_Games_Played as AvgCompletionsPerGame
+           from df")
+
+##Create Shared Data element
+sd <- SharedData$new(a)
+
+##Create Chart 1
+x <- list(
+  title = "Avg Yards Per Game (Rushing, Receiving, Passing)"
 )
+y <- list(
+  title = "Avg TDs Per Game (Rushing, Receiving, Passing)"
+)
+
+p<-plot_ly(sd, x = ~AvgYardsPerGame, y = ~AvgTouchdownsPerGame, color = ~Position, 
+           #width="100%", height=400,
+            mode = 'markers', symbol = ~Position, symbols = c('circle','x','o', '+'), marker = list(size = 8),
+           text = ~paste('Name: ', Name,
+                         '</br> Team: ', Team))%>%
+  layout(title = 'Avg Yards v Touchdowns',
+         xaxis = x, yaxis = y) %>% 
+  config(displayModeBar = F)
+
+##Create Chart 2
+ppr<- plot_ly(sd, x = ~AvgYardsPerGame, y = ~AvgCompletionsPerGame, type = 'scatter', color = ~Position, 
+              #width="100%", height=400,
+               mode = 'markers', symbol = ~Position, symbols = c('circle','x','o', '+'), marker = list(size = 8),
+              text = ~paste('Name: ', Name,
+                            '</br> Team: ', Team)
+              #mode = 'text', text = ~Name, textposition = 'middle right', textfont = list(size = 8)
+)%>%
+  layout( title = 'Avg Yards v Completions',
+          xaxis = list(title = 'Avg Yards Per Game (Rushing, Receiving, Passing)'),
+          yaxis = list(title = 'Avg Completions Per Game (Rushing, Receiving, Passing)')) %>% 
+  config(displayModeBar = F)
+
+##create datatable
+dt <- datatable(sd, extensions="Scroller", style="bootstrap", class="compact",
+                options=list(initComplete = JS(
+                  "function(settings, json) {",
+                  "$(this.api().table().header()).css({'background-color': '#F8F8F8', 'color': '#000'});",
+                  "}"), columnDefs = list(list(visible=FALSE, targets=c(1,7,9,11)))))
+
+
+##Create Crosstalk Widget
+bscols(     
+        list(filter_checkbox("Position", "Position", sd, ~Position, inline = TRUE),
+        filter_select("Team", "Team", sd, ~Team,multiple=T))
+)
+
+p   
+
+ppr
+
+datatable(sd, extensions="Scroller", style="bootstrap", class="compact",
+          #width="100%", height=400,
+          options=list(initComplete = JS(
+            "function(settings, json) {",
+            "$(this.api().table().header()).css({'background-color': '#F8F8F8', 'color': '#000'});",
+            "}"), columnDefs = list(list(visible=FALSE, targets=c(1,7,9,11)))))
 ```
