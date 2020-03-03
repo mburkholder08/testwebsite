@@ -15,8 +15,7 @@ knitr::opts_chunk$set(collapse = TRUE)
 
 Test
 
-```{r, message=FALSE, warning=FALSE}
-knitr::opts_chunk$set(collapse = TRUE)
+```{r, message=FALSE, warning=FALSE, echo=FALSE}
 library(data.table)
 library(sqldf)
 library(plotly)
