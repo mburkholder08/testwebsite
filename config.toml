@@ -1,7 +1,7 @@
 baseurl = "/"
 languageCode = "en-us"
-title = "Matthew's Page"
-theme = "hugo-sustain"
+title = "A Hugo website"
+theme = "hugo-lithium"
 googleAnalytics = ""
 disqusShortname = ""
 ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
@@ -39,4 +39,5 @@ ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
     width = 50
     height = 50
     alt = "Logo"
+
 
