@@ -1,5 +1,5 @@
 ---
-title: Post Title
+title: NFL Data
 author: ~
 date: '2020-03-02'
 slug: post-title
@@ -13,7 +13,8 @@ knitr::opts_chunk$set(collapse = TRUE)
 
 # R Markdown
 
-Test
+Missouri sucks at football
+Go Gators
 
 ```{r, message=FALSE, warning=FALSE, echo=FALSE}
 library(data.table)
