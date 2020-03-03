@@ -1,0 +1,17 @@
+---
+title: mcdonalds
+author: ''
+date: '2020-03-02'
+slug: mcdonalds
+categories: []
+tags: []
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE)
+```
+
+```{r}
+
+```
+
