@@ -15,7 +15,7 @@ knitr::opts_chunk$set(collapse = TRUE)
 
 Test
 
-```{r cars}
+```{r cars, message=FALSE, warning=FALSE}
 library(data.table)
 library(sqldf)
 library(plotly)
