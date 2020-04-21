@@ -1,0 +1,141 @@
+---
+title: Cows And Bulls
+author: ''
+date: '2020-04-20'
+slug: cows-and-bulls
+categories: []
+tags: []
+---
+
+This is my take on the classic "Cows and Bulls" game written in R.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE)
+```
+
+```{r}
+bulls_and_cows <-function() {
+  
+  generate_computer_vector <- function() {
+    computer_sample <- sample(0:9,4)                                      #generates computer vector
+    return(computer_sample)
+  }
+  
+  get_guess <- function() {
+    user_choice_is_good <- FALSE
+    
+    h <- 0
+    
+    while (user_choice_is_good==FALSE){
+      
+      if (i == i) {
+        print(paste("You have", 11 - i, "guesses remaining."))
+      }
+      numbers_string <- readline("Please enter four numbers >")           #prompts user to make a guess
+      user_choice <- as.integer(unlist(strsplit(numbers_string," ")))
+      
+      user_choice_is_good <- TRUE
+      
+      
+      if (length(user_choice) > length(unique(user_choice))) {
+        message("Incorrect input. Please only use a number once.")      #check to make sure there are no repeated numbers
+        h <- h + 1
+        user_choice_is_good <-FALSE
+        
+      }
+      if (any(is.na(user_choice)) || any(user_choice < 0) || any(user_choice > 9)) {
+        message("Incorrect input. Please enter integer values between 0 and 9.")           #check to make sure the value is numeric between 0 and 9 inclusive
+        h <- h + 1
+        user_choice_is_good <-FALSE
+        
+      }
+      
+      if (!length(user_choice) == 4) {
+        message("Incorrect input. Please enter four integer values.")                       #check to make sure 4 numbers are input
+        h <- h + 1
+        user_choice_is_good <- FALSE
+        
+      }
+      if(h == 3) {
+        stop("Error. You have made 3 mistakes in a row. The game is over.")                 #ends the game after 3 consecutive mistakes
+      }
+    }
+    
+    
+    return(user_choice)
+  }
+  
+  number_bulls <- function(user_choice,computer_sample){
+    bulls <- sum(user_choice == computer_sample)                                             #calculates bulls
+    return (bulls)
+  }
+  
+  number_cows <- function(user_choice,computer_sample,test_bulls) {
+    cows <- sum(user_choice %in% computer_sample) - test_bulls                               #calculates cows
+    return (cows)
+  }
+  
+  
+  number_bulls_and_cows <- function(user_choice_inside,computer_sample_inside) {
+    
+    bulls <- number_bulls(user_choice_inside, computer_sample_inside)
+    
+    cows <- number_cows(user_choice_inside,computer_sample_inside,bulls)
+    
+    return(c(bulls,cows))
+  }
+  
+  do_response <- function(user_choice_outside,computer_sample) {
+    
+    k <- 0
+    while (k < 5) {
+      if (get_bulls_and_cows[1] == k) {                                              #prints number of bulls
+        print(paste("There are ", k, "bulls."))
+      }
+      k <- k + 1
+    }
+    
+    
+    j <- 0
+    while (j < 5) {
+      if (get_bulls_and_cows[2] == j) {
+        print(paste("There are ", j, "cows."))                                         #prints number of cows
+      }
+      j <- j + 1
+    }
+    
+    
+    if (i == 10 && user_choice_outside != computer_sample) {
+      print("You are out of guesses! The game is over.")
+      cat("The correct answer was:",computer_sample)
+    }
+    
+    if(user_choice_outside[1] == computer_sample[1] && user_choice_outside[2] == computer_sample[2] && user_choice_outside[3] == computer_sample[3] && user_choice_outside[4] == computer_sample[4]) {
+      print(paste("It took you", i, "guesses to win this game."))
+    }
+    
+  }
+  
+  
+  ### Stuff happens below here
+  
+  i <- 1
+  
+  computer_sample <- generate_computer_vector()
+  
+  while (i < 11) {
+    user_choice_outside <- get_guess()
+    get_bulls_and_cows <- number_bulls_and_cows(user_choice_outside,computer_sample)
+    get_response <- do_response(user_choice_outside,computer_sample)
+    
+    i <- i + 1
+    
+    if (get_bulls_and_cows[1] == 4) {
+      break
+    }
+  }
+  
+  
+}
+```
+
