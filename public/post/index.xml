@@ -22,6 +22,16 @@ bulls_and_cows &amp;lt;-function() {generate_computer_vector &amp;lt;- function
     </item>
     
     <item>
+      <title>Vector Math in Python and R</title>
+      <link>/2020/04/20/vector-math-in-python-and-r/</link>
+      <pubDate>Mon, 20 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/2020/04/20/vector-math-in-python-and-r/</guid>
+      <description>This is an exploration of vector math in R and Python. For the snippets in R, I have plotted the runtimes to compare speeds of vectorization vs non-vectorization.
+#MX + NX + G in Pythondef python_element_mult():import numpy as npnp.random.seed(33)M = np.random.normal(0,1,(10,10))N = np.random.normal(0,1,(10,10))G = np.random.normal(0,1,(10,1))x = np.random.normal(0,1,(10,1))M_X = np.array([[0.0],[0.0],[0.0],[0.0],[0.0],[0.0],[0.0],[0.0],[0.0],[0.0]])for i in range(len(M)):for j in range(len(x[0])):for k in range(len(x)):M_X[i][j] += M[i][k] * x[k][j]N_X = np.</description>
+    </item>
+    
+    <item>
       <title>NFL Data</title>
       <link>/2020/03/02/post-title/</link>
       <pubDate>Mon, 02 Mar 2020 00:00:00 +0000</pubDate>
