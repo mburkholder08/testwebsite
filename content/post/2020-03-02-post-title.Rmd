@@ -13,9 +13,6 @@ knitr::opts_chunk$set(collapse = TRUE)
 
 # R Markdown
 
-Missouri sucks at football
-Go Gators
-
 ```{r, message=FALSE, warning=FALSE, echo=FALSE}
 library(data.table)
 library(sqldf)
