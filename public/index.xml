@@ -57,7 +57,7 @@ data(wine, package=&amp;quot;rattle&amp;quot;)n &amp;lt;- 178# n is the number
       <pubDate>Thu, 05 May 2016 21:48:51 -0700</pubDate>
       
       <guid>/about/</guid>
-      <description>This is my website.</description>
+      <description>These are some projects I&amp;rsquo;ve worked on, dealing mostly with statistical analysis and data visualization in R. For the presentations that don&amp;rsquo;t have the code explicitly on the page, it is available on my Github page. Thanks.</description>
     </item>
     
   </channel>
