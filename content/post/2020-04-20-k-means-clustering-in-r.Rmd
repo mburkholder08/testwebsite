@@ -1,0 +1,68 @@
+---
+title: K Means Clustering In R
+author: ''
+date: '2020-04-20'
+slug: k-means-clustering-in-r
+categories: []
+tags: []
+---
+
+This is an exploration of K-Means Clustering using the Wine dataset provided by R.
+
+We write an algorithm to create $k=3$ clusters with $m=50$ repititions.
+
+```{r}
+data(wine, package="rattle")
+n <- 178
+# n is the number of data points
+k <- 3
+# k is the number of clusters
+p <- 13
+# p is the number of variables, once we have taken out the type variable
+m <- 50
+# m is the number of times the algorithm is repeated.
+
+cluster_center <- matrix(rep(0,k*p), ncol = p)
+distances <- rep(0,k)
+wine_matrix <- cbind(as.matrix(wine[,-1]), rep(0,n))
+
+for (i in 1:m){
+  if (i == 1){
+    sample <- sample(1:n,k,replace = FALSE)
+    for (j in 1:k){
+      cluster_center[j,] <- wine_matrix[sample[j],-(p+1)]
+    }
+  }
+  
+  # This section of code sets k=3 initial cluster centers to be three different 
+  # points in the data set.
+  
+  for (s in 1:n){
+    for (t in 1:k){
+      distances[t] <- sqrt(sum((cluster_center[t,] - wine_matrix[s,-(p+1)])^2))
+    }
+    # Finds distances to all of the cluster centers.
+    cluster_number <- which(distances == min(distances))
+    # Determines which number cluster is closest.
+    wine_matrix[s,p+1] <- cluster_number
+    # Records the cluster number on each data point.
+  }  
+  for (j in 1:k){
+    wine_cluster <- wine_matrix[wine_matrix[,p+1] == j,]
+    for (u in 1:p){
+      cluster_center[j,u] <- mean(wine_cluster[,u]) 
+      # Center of data within cluster j.
+    }
+  }
+}
+
+# Notice that the output is a matrix. The rows of the matrix correspond to the data points in the wine data set. The final column gives the cluster of that point after m repitions of the algorithm.
+```
+
+Now, we plot the clusters.
+
+```{r}
+library('fpc')
+plotcluster(wine[,-1], wine_matrix[,p+1])
+```
+
