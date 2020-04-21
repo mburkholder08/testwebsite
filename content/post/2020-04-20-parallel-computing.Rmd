@@ -1,0 +1,53 @@
+---
+title: Parallel Computing
+author: ''
+date: '2020-04-20'
+slug: parallel-computing
+categories: []
+tags: []
+---
+
+This is an exploration of parallel computation, and its effects on run times. The below codes generate the same output, but one is calculated in parllel. The goal is to show that parallel computing, when used appropriately, can be a faster alternative.
+
+
+```{r}
+library(doParallel)
+library(doRNG)
+set.seed(125)
+M = 3 # number of cores in parallel computing
+```
+
+```{r}
+serialtime <-c()
+k <- 1
+while (k<11) {
+tstart = proc.time()[3]
+n <- 50*k
+A <- solve(matrix(rnorm(n*n,mean=0,sd=1),n,n))
+B <- solve(matrix(rnorm(n*n,mean=0,sd=1),n,n))
+C <- solve(matrix(rnorm(n*n,mean=0,sd=1),n,n))
+k <- k + 1
+etime=proc.time()[3] - tstart
+serialtime <- c(serialtime,etime)
+}
+```
+
+```{r}
+k <- 1
+paralleltime <-c()
+while (k < 11) {
+  n = 50*k
+  tstart = proc.time()[3]
+  rx1 <-foreach(i = 1:M) %dorng%
+  solve(matrix(rnorm(n^2),n,n),rnorm(n))
+  k <- k + 1
+  etime = proc.time()[3] - tstart
+  paralleltime <- c(paralleltime,etime)
+}
+```
+
+```{r}
+n <- 1:10
+plot(n,serialtime,type="l",col="blue",xlab = "n from 1 to 10", ylab = "computation time")
+lines(n,paralleltime,col="orange")
+```

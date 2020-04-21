@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.65.3" />
+
+
+<title>Parallel Computing - A Hugo website</title>
+<meta property="og:title" content="Parallel Computing - A Hugo website">
+
+
+  <link href='/favicon.ico' rel='icon' type='image/x-icon'/>
+
+
+
+  
+
+
+
+
+
+
+
+
+<link href='//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css' rel='stylesheet' type='text/css' />
+
+
+
+<link rel="stylesheet" href="/css/fonts.css" media="all">
+<link rel="stylesheet" href="/css/main.css" media="all">
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/" class="nav-logo">
+    <img src="/images/uf.jpg"
+         width="50"
+         height="50"
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="/about/">About</a></li>
+    
+    <li><a href="https://github.com/mburkholder08">GitHub</a></li>
+    
+    <li><a href="https://twitter.com/rstudio">Twitter</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">1 min read</span>
+    
+
+    <h1 class="article-title">Parallel Computing</h1>
+
+    
+    <span class="article-date">2020-04-20</span>
+    
+
+    <div class="article-content">
+      
+
+
+<p>This is an exploration of parallel computation, and its effects on run times. The below codes generate the same output, but one is calculated in parllel. The goal is to show that parallel computing, when used appropriately, can be a faster alternative.</p>
+<pre class="r"><code>library(doParallel)</code></pre>
+<pre><code>## Loading required package: foreach</code></pre>
+<pre><code>## Loading required package: iterators</code></pre>
+<pre><code>## Loading required package: parallel</code></pre>
+<pre class="r"><code>library(doRNG)</code></pre>
+<pre><code>## Loading required package: rngtools</code></pre>
+<pre><code>## Loading required package: pkgmaker</code></pre>
+<pre><code>## Loading required package: registry</code></pre>
+<pre><code>## 
+## Attaching package: &#39;pkgmaker&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:base&#39;:
+## 
+##     isFALSE</code></pre>
+<pre class="r"><code>set.seed(125)
+M = 3 # number of cores in parallel computing</code></pre>
+<pre class="r"><code>serialtime &lt;-c()
+k &lt;- 1
+while (k&lt;11) {
+tstart = proc.time()[3]
+n &lt;- 50*k
+A &lt;- solve(matrix(rnorm(n*n,mean=0,sd=1),n,n))
+B &lt;- solve(matrix(rnorm(n*n,mean=0,sd=1),n,n))
+C &lt;- solve(matrix(rnorm(n*n,mean=0,sd=1),n,n))
+k &lt;- k + 1
+etime=proc.time()[3] - tstart
+serialtime &lt;- c(serialtime,etime)
+}</code></pre>
+<pre class="r"><code>k &lt;- 1
+paralleltime &lt;-c()
+while (k &lt; 11) {
+  n = 50*k
+  tstart = proc.time()[3]
+  rx1 &lt;-foreach(i = 1:M) %dorng%
+  solve(matrix(rnorm(n^2),n,n),rnorm(n))
+  k &lt;- k + 1
+  etime = proc.time()[3] - tstart
+  paralleltime &lt;- c(paralleltime,etime)
+}</code></pre>
+<pre><code>## Warning: executing %dopar% sequentially: no parallel backend registered</code></pre>
+<pre class="r"><code>n &lt;- 1:10
+plot(n,serialtime,type=&quot;l&quot;,col=&quot;blue&quot;,xlab = &quot;n from 1 to 10&quot;, ylab = &quot;computation time&quot;)
+lines(n,paralleltime,col=&quot;orange&quot;)</code></pre>
+<p><img src="/post/2020-04-20-parallel-computing_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+
+    </div>
+  </article>
+
+  
+
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+    
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
+
+
+
+    
+
+    
+  </body>
+</html>
+

@@ -33,6 +33,16 @@ data(wine, package=&amp;quot;rattle&amp;quot;)n &amp;lt;- 178# n is the number
     </item>
     
     <item>
+      <title>Parallel Computing</title>
+      <link>/2020/04/20/parallel-computing/</link>
+      <pubDate>Mon, 20 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/2020/04/20/parallel-computing/</guid>
+      <description>This is an exploration of parallel computation, and its effects on run times. The below codes generate the same output, but one is calculated in parllel. The goal is to show that parallel computing, when used appropriately, can be a faster alternative.
+library(doParallel)## Loading required package: foreach## Loading required package: iterators## Loading required package: parallellibrary(doRNG)## Loading required package: rngtools## Loading required package: pkgmaker## Loading required package: registry## ## Attaching package: &amp;#39;pkgmaker&amp;#39;## The following object is masked from &amp;#39;package:base&amp;#39;:## ## isFALSEset.</description>
+    </item>
+    
+    <item>
       <title>Vector Math in Python and R</title>
       <link>/2020/04/20/vector-math-in-python-and-r/</link>
       <pubDate>Mon, 20 Apr 2020 00:00:00 +0000</pubDate>
