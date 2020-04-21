@@ -1,0 +1,564 @@
+---
+title: Vector Math in Python and R
+author: ''
+date: '2020-04-20'
+slug: vector-math-in-python-and-r
+categories: []
+tags: []
+---
+
+This is an exploration of vector math in R and Python. For the snippets in R, I have plotted the runtimes to compare speeds of vectorization vs non-vectorization.
+
+```{python}
+
+#MX + NX + G in Python
+
+def python_element_mult():
+
+  import numpy as np
+
+  np.random.seed(33)
+
+  M = np.random.normal(0,1,(10,10))
+  N = np.random.normal(0,1,(10,10))
+  G = np.random.normal(0,1,(10,1))
+  x = np.random.normal(0,1,(10,1))
+
+  M_X = np.array([[0.0],[0.0],[0.0],[0.0],[0.0],[0.0],[0.0],[0.0],[0.0],[0.0]])
+
+  for i in range(len(M)):
+    for j in range(len(x[0])):
+      for k in range(len(x)):
+        M_X[i][j] += M[i][k] * x[k][j]
+
+
+  N_X = np.array([[0.0],[0.0],[0.0],[0.0],[0.0],[0.0],[0.0],[0.0],[0.0],[0.0]])
+
+  for i in range(len(N)):
+    for j in range(len(x[0])):
+      for k in range(len(x)):
+        N_X[i][j] += N[i][k] * x[k][j]
+
+
+  q = M_X + N_X + G
+
+  print(q)
+  
+python_element_mult()
+
+```
+
+```{python}
+
+#MX + NX + G Vectorized Calculation
+
+def python_vectorized_mult():
+
+  import numpy as np
+
+  np.random.seed(33)
+
+  M = np.random.normal(0,1,(10,10))
+  N = np.random.normal(0,1,(10,10))
+  G = np.random.normal(0,1,(10,1))
+  x = np.random.normal(0,1,(10,1))
+
+  M_X = M.dot(x)
+
+  N_X = N.dot(x)
+
+  q = M_X + N_X + G
+
+  print(q)
+  
+python_vectorized_mult()
+
+```
+
+```{python}
+
+import timeit
+
+import numpy as np
+
+np.random.seed(33)
+
+tic = timeit.default_timer()
+
+# Sets the initial time
+
+time = np.zeros(10000)
+
+
+for n in range(10000):
+
+  M = np.random.normal(0,1,(10,10))
+  N = np.random.normal(0,1,(10,10))
+  G = np.random.normal(0,1,(10,1))
+  x = np.random.normal(0,1,(10,1))
+
+  M_X = np.array([[0.0],[0.0],[0.0],[0.0],[0.0],[0.0],[0.0],[0.0],[0.0],[0.0]])
+
+  for i in range(len(M)):
+    for j in range(len(x[0])):
+      for k in range(len(x)):
+        M_X[i][j] += M[i][k] * x[k][j]
+
+
+  N_X = np.array([[0.0],[0.0],[0.0],[0.0],[0.0],[0.0],[0.0],[0.0],[0.0],[0.0]])
+
+  for i in range(len(N)):
+    for j in range(len(x[0])):
+      for k in range(len(x)):
+        N_X[i][j] += N[i][k] * x[k][j]
+        
+  q = M_X + N_X + G
+  
+  time[n] = timeit.default_timer() - tic
+
+```
+
+```{python}
+
+import numpy as np
+
+import timeit
+
+np.random.seed(33)
+
+tic = timeit.default_timer()
+
+# Sets the initial time
+
+time = np.zeros(10000)
+
+for n in range(10000):
+
+  M = np.random.normal(0,1,(10,10))
+  N = np.random.normal(0,1,(10,10))
+  G = np.random.normal(0,1,(10,1))
+  x = np.random.normal(0,1,(10,1))
+
+  M_X = M.dot(x)
+  
+  N_X = N.dot(x)
+  
+  q = M_X + N_X + G
+  
+  time[n] = timeit.default_timer() - tic
+
+```
+
+```{r}
+set.seed(1234)
+
+X <- rnorm(10)
+M <- matrix(rnorm(10*10), ncol = 10)
+N <- matrix(rnorm(10*10), ncol = 10)
+G <- rnorm(10)
+
+# We create vectors and matrices with entries sampled from N(0,1).
+
+MX <- matrix(rep(0, 10), ncol = 1)
+NX <- matrix(rep(0, 10), ncol = 1)
+
+# We create empty vectors to fill
+
+for (i in 1:10){
+  for (j in 1:10){
+      MX[i,] = MX[i,] + M[i,j] * X[j]
+  }
+}
+
+for (i in 1:10){
+  for (j in 1:10){
+    NX[i,] = NX[i,] + N[i,j] * X[j]
+  }
+}
+
+# These for loops multiply matrices by vectors by hand.
+
+print(MX + NX + G)
+
+```
+
+```{r}
+set.seed(1234)
+
+X <- rnorm(10)
+M <- matrix(rnorm(10*10), ncol = 10)
+N <- matrix(rnorm(10*10), ncol = 10)
+G <- rnorm(10)
+
+print(M %*% X + N %*% X + G)
+
+# This time we use the internal commands of R to do the matrix calculation.
+```
+
+```{r}
+set.seed(1234)
+
+time <- rep(NA, 10000)
+
+tic <- proc.time()
+
+# We set the initial time
+
+MX_NX_G <- list()
+
+for (n in 1:10000){
+  X <- rnorm(10)
+  M <- matrix(rnorm(10*10), ncol = 10)
+  N <- matrix(rnorm(10*10), ncol = 10)
+  G <- rnorm(10)
+
+  # We create vectors and matrices with entries sampled from N(0,1).
+
+  MX <- matrix(rep(0, 10), ncol = 1)
+  NX <- matrix(rep(0, 10), ncol = 1)
+
+  # We create empty vectors to fill
+
+  for (i in 1:10){
+    for (j in 1:10){
+      MX[i,] = MX[i,] + M[i,j] * X[j]
+    }
+  }
+
+  for (i in 1:10){
+    for (j in 1:10){
+      NX[i,] = NX[i,] + N[i,j] * X[j]
+    }
+  }
+
+  # These for loops multiply matrices by vectors by hand.
+
+  MX_NX_G[[n]] <- MX + NX + G
+  
+  # We add the next matrix to the list
+
+  time[n] <- proc.time()["elapsed"] - tic["elapsed"]
+  
+  # We record the time elapsed since the program began to run
+}
+
+```
+
+Now, we plot time elapsed against number of runs executed.
+
+```{r}
+library(ggplot2)
+time_df <- data.frame(1:10000, time)
+ggplot(data = time_df, aes(x = time_df[,1], y = time_df$time)) +
+  geom_point() + labs(title = "Time Elapsed Using For Loops", x = "Number of Runs", y = "Time Elapsed")
+```
+
+```{r}
+set.seed(1234)
+
+time_vec <- rep(NA, 10000)
+
+tic <- proc.time()
+
+# We set the initial time
+
+MX_NX_G_vec <- list()
+
+for (n in 1:10000){
+  X <- rnorm(10)
+  M <- matrix(rnorm(10*10), ncol = 10)
+  N <- matrix(rnorm(10*10), ncol = 10)
+  G <- rnorm(10)
+
+  MX_NX_G_vec[[n]] <- M %*% X + N %*% X + G
+  
+  # This time we use the internal commands of R to do the matrix calculation.
+  
+  time_vec[n] <- proc.time()["elapsed"] - tic["elapsed"]
+  
+  # We record the time elapsed after the nth run
+}
+```
+
+```{r}
+time_vec_df <- data.frame(1:10000, time_vec)
+ggplot(data = time_vec_df, aes(x = time_vec_df[,1], y = time_vec_df$time_vec)) +
+  geom_point() + labs(title = "Time Elapsed Using Vectorized Code", x = "Number of Runs", y = "Time Elapsed")
+```
+
+We see that vectorized code runs much faster.
+
+```{python}
+import numpy as np
+
+np.random.seed(1234)
+
+X = np.random.normal(0,1,(10,1))
+M = np.random.normal(0,1,(10,10))
+G = np.random.normal(0,1,(10,1))
+
+# We create matrices and vector with entries sampled from N(0,1)
+
+M3_X = np.zeros([10,1])
+
+# We create matrices with zeros, which we will replace with values
+
+for i in range(10):
+    for j in range(10):
+        M3_X[i] = M3_X[i] + (M[i,j] ** 3) * X[j]
+    
+# We cube M and multiply by X using a for loop
+        
+print(M3_X + 3 * G)
+```
+
+```{python}
+import numpy as np
+
+np.random.seed(1234)
+
+X = np.random.normal(0,1,(10,1))
+M = np.random.normal(0,1,(10,10))
+G = np.random.normal(0,1,(10,1))
+
+# We create matrices and vector with entries sampled from N(0,1)
+
+print(np.multiply(np.multiply(M,M),M).dot(X) + 3*G)
+
+# This is (M_3)X + 3G where M_3 denotes the matrix obtained by cubing each entry of M
+```
+
+```{python}
+import timeit
+
+import numpy as np
+
+np.random.seed(1234)
+
+tic = timeit.default_timer()
+
+# Sets the initial time
+
+time = np.zeros(10000)
+
+M3X_3G = []
+
+for n in range(10000):
+    
+    X = np.random.normal(0,1,(10,1))
+    M = np.random.normal(0,1,(10,10))
+    G = np.random.normal(0,1,(10,1))
+
+    # We create matrices and vector with entries sampled from N(0,1)
+
+    M3_X = np.zeros([10,1])
+
+    # We create matrices with zeros, which we will replace with values
+
+    for i in range(10):
+        for j in range(10):
+            M3_X[i] = M3_X[i] + M[i,j] ** 3 + X[j]
+    
+    # We cube M and multiply by X using a for loop
+        
+    M3X_3G.append(M3_X + 3*G)
+    
+    # Records the output matrix
+    
+    time[n] = timeit.default_timer() - tic
+    
+    # Records time after the n+1 run
+    
+```
+
+```{python}
+import numpy as np
+
+import timeit
+
+np.random.seed(1234)
+
+tic = timeit.default_timer()
+
+# Sets the initial time
+
+time = np.zeros(10000)
+
+M3X_3G_vec = []
+
+for n in range(10000):
+    X = np.random.normal(0,1,(10,1))
+    M = np.random.normal(0,1,(10,10))
+    G = np.random.normal(0,1,(10,1))
+
+    # We create matrices and vector with entries sampled from N(0,1)
+
+    M3X_3G_vec.append(np.multiply(np.multiply(M,M),M).dot(X) + 3*G)
+
+    # We have added the output matrix to the list
+    
+    time[n] = timeit.default_timer() - tic
+    
+    # Records time after the n+1 run
+
+```
+
+The vectorized code is faster.
+
+```{r}
+
+#M^3X + 3G In R
+
+my_element_mult <- function() {
+
+set.seed(162)
+
+M <- matrix(data = rnorm(100, mean = 0, sd = 1), nrow = 10, ncol = 10, byrow = TRUE)
+G <- matrix(data = rnorm(10, mean = 0, sd = 1), nrow = 10, ncol = 1, byrow = TRUE)
+x <- matrix(data = rnorm(10, mean = 0, sd = 1), nrow = 10, ncol = 1, byrow = TRUE)
+
+M_3 <- matrix(0:0,nrow(M),ncol(M))
+
+for (i in 1:nrow(M)) {
+  for (j in 1:ncol(M)) {
+      M_3[i,j] <- M_3[i,j] + M[i,j] ** 3
+    }
+}
+
+M_3_X <- matrix(0:0,nrow(M_3),ncol(x))
+
+for (i in 1:nrow(M_3)) {
+  for (j in 1:ncol(x)) {
+    for (k in 1:ncol(M_3)) {
+      M_3_X[i,j] <- M_3_X[i,j] + M_3[i,k] * x[k,j]
+    }
+  }
+}
+
+
+q = M_3_X + 3*G
+
+print(q)
+
+}
+
+run_function_r <- my_element_mult()
+
+
+
+```
+
+```{r}
+
+#M^3X + 3G Vectorized in R
+
+my_vectorized_mult <- function() {
+
+set.seed(162)
+
+M <- matrix(data = rnorm(100, mean = 0, sd = 1), nrow = 10, ncol = 10, byrow = TRUE)
+G <- matrix(data = rnorm(10, mean = 0, sd = 1), nrow = 10, ncol = 1, byrow = TRUE)
+x <- matrix(data = rnorm(10, mean = 0, sd = 1), nrow = 10, ncol = 1, byrow = TRUE)
+
+M_3_X = M ** 3 %*% x
+
+q = M_3_X + 3*G
+
+print(q)
+
+}
+
+run_vectorized_function <- my_vectorized_mult()
+
+```
+
+```{r}
+
+set.seed(162)
+
+time_to_run <- rep(NA,10000)
+
+tic <-proc.time()
+
+
+
+my_element_mult <- list()
+
+for (n in 1:10000) {
+
+M <- matrix(data = rnorm(100, mean = 0, sd = 1), nrow = 10, ncol = 10, byrow = TRUE)
+G <- matrix(data = rnorm(10, mean = 0, sd = 1), nrow = 10, ncol = 1, byrow = TRUE)
+x <- matrix(data = rnorm(10, mean = 0, sd = 1), nrow = 10, ncol = 1, byrow = TRUE)
+
+M_3 <- matrix(0:0,nrow(M),ncol(M))
+
+for (i in 1:nrow(M)) {
+  for (j in 1:ncol(M)) {
+      M_3[i,j] <- M_3[i,j] + M[i,j] ** 3
+    }
+}
+
+M_3_X <- matrix(0:0,nrow(M_3),ncol(x))
+
+for (i in 1:nrow(M_3)) {
+  for (j in 1:ncol(x)) {
+    for (k in 1:ncol(M_3)) {
+      M_3_X[i,j] <- M_3_X[i,j] + M_3[i,k] * x[k,j]
+    }
+  }
+}
+
+
+my_element_mult[[n]] <- M_3_X + 3*G
+
+time_to_run[n] <- proc.time()["elapsed"] - tic["elapsed"]
+
+}
+
+
+```
+
+```{r}
+
+library(ggplot2)
+time_dataframe <- data.frame(1:10000, time_to_run)
+ggplot(data = time_dataframe, aes(x = time_dataframe[,1], y = time_dataframe$time_to_run)) +
+  geom_point() + labs(title = "Time Elapsed Using For Loops", x = "Number of Runs", y = "Time Elapsed")
+
+```
+
+```{r}
+
+set.seed(162)
+
+run_time <- rep(NA,10000)
+
+tic <- proc.time()
+
+my_vectorized_mult <- list()
+
+for (n in 1:10000) {
+
+M <- matrix(data = rnorm(100, mean = 0, sd = 1), nrow = 10, ncol = 10, byrow = TRUE)
+G <- matrix(data = rnorm(10, mean = 0, sd = 1), nrow = 10, ncol = 1, byrow = TRUE)
+x <- matrix(data = rnorm(10, mean = 0, sd = 1), nrow = 10, ncol = 1, byrow = TRUE)
+
+M_3_X = M ** 3 %*% x
+
+my_vectorized_mult[[n]] <- M ** 3 %*% x
+
+run_time[n] <- proc.time()["elapsed"] - tic["elapsed"]
+
+}
+
+
+```
+
+```{r}
+
+library(ggplot2)
+vector_time_dataframe <- data.frame(1:10000, run_time)
+ggplot(data = vector_time_dataframe, aes(x = vector_time_dataframe[,1], y = vector_time_dataframe$run_time)) +
+  geom_point() + labs(title = "Time Elapsed Using For Loops", x = "Number of Runs", y = "Time Elapsed")
+
+```
