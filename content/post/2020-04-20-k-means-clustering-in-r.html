@@ -1,0 +1,62 @@
+---
+title: K Means Clustering In R
+author: ''
+date: '2020-04-20'
+slug: k-means-clustering-in-r
+categories: []
+tags: []
+---
+
+
+
+<p>This is an exploration of K-Means Clustering using the Wine dataset provided by R.</p>
+<p>We write an algorithm to create <span class="math inline">\(k=3\)</span> clusters with <span class="math inline">\(m=50\)</span> repititions.</p>
+<pre class="r"><code>data(wine, package=&quot;rattle&quot;)
+n &lt;- 178
+# n is the number of data points
+k &lt;- 3
+# k is the number of clusters
+p &lt;- 13
+# p is the number of variables, once we have taken out the type variable
+m &lt;- 50
+# m is the number of times the algorithm is repeated.
+
+cluster_center &lt;- matrix(rep(0,k*p), ncol = p)
+distances &lt;- rep(0,k)
+wine_matrix &lt;- cbind(as.matrix(wine[,-1]), rep(0,n))
+
+for (i in 1:m){
+  if (i == 1){
+    sample &lt;- sample(1:n,k,replace = FALSE)
+    for (j in 1:k){
+      cluster_center[j,] &lt;- wine_matrix[sample[j],-(p+1)]
+    }
+  }
+  
+  # This section of code sets k=3 initial cluster centers to be three different 
+  # points in the data set.
+  
+  for (s in 1:n){
+    for (t in 1:k){
+      distances[t] &lt;- sqrt(sum((cluster_center[t,] - wine_matrix[s,-(p+1)])^2))
+    }
+    # Finds distances to all of the cluster centers.
+    cluster_number &lt;- which(distances == min(distances))
+    # Determines which number cluster is closest.
+    wine_matrix[s,p+1] &lt;- cluster_number
+    # Records the cluster number on each data point.
+  }  
+  for (j in 1:k){
+    wine_cluster &lt;- wine_matrix[wine_matrix[,p+1] == j,]
+    for (u in 1:p){
+      cluster_center[j,u] &lt;- mean(wine_cluster[,u]) 
+      # Center of data within cluster j.
+    }
+  }
+}
+
+# Notice that the output is a matrix. The rows of the matrix correspond to the data points in the wine data set. The final column gives the cluster of that point after m repitions of the algorithm.</code></pre>
+<p>Now, we plot the clusters.</p>
+<pre class="r"><code>library(&#39;fpc&#39;)
+plotcluster(wine[,-1], wine_matrix[,p+1])</code></pre>
+<p><img src="/post/2020-04-20-k-means-clustering-in-r_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>

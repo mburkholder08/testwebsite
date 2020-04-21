@@ -22,6 +22,17 @@ bulls_and_cows &amp;lt;-function() {generate_computer_vector &amp;lt;- function
     </item>
     
     <item>
+      <title>K Means Clustering In R</title>
+      <link>/2020/04/20/k-means-clustering-in-r/</link>
+      <pubDate>Mon, 20 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/2020/04/20/k-means-clustering-in-r/</guid>
+      <description>This is an exploration of K-Means Clustering using the Wine dataset provided by R.
+We write an algorithm to create \(k=3\) clusters with \(m=50\) repititions.
+data(wine, package=&amp;quot;rattle&amp;quot;)n &amp;lt;- 178# n is the number of data pointsk &amp;lt;- 3# k is the number of clustersp &amp;lt;- 13# p is the number of variables, once we have taken out the type variablem &amp;lt;- 50# m is the number of times the algorithm is repeated.</description>
+    </item>
+    
+    <item>
       <title>Vector Math in Python and R</title>
       <link>/2020/04/20/vector-math-in-python-and-r/</link>
       <pubDate>Mon, 20 Apr 2020 00:00:00 +0000</pubDate>
