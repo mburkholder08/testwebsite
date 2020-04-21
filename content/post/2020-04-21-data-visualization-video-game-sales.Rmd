@@ -1,0 +1,38 @@
+---
+title: "Data Visualization - Video Game Sales"
+author: ''
+date: '2020-04-21'
+output: pdf_document
+slug: data-visualization-video-game-sales
+tags: []
+categories: []
+---
+
+Data taken from https://www.kaggle.com/gregorut/videogamesales
+
+```{r echo=FALSE, message=FALSE}
+library(ggplot2)
+library(reshape2)
+vg <-read.csv("vgsales.csv")
+
+df<-melt(vg,id.vars = "Year", measure.vars = c("Action", "Adventure", "Fighting", "Misc", "Platform", "Puzzle", "Racing", "Role.Playing","Shooter","Simulation","Sports","Strategy"))
+
+p <- ggplot(df, aes(Year,value)) + xlab("Year") + ylab("Sales") + labs(title="                    Total Video Game Sales by Genre") + scale_fill_discrete(name="Genre")
+
+area_chart <- p + geom_area(aes(fill = variable), position = 'stack')
+print(area_chart)
+```
+
+```{r echo=FALSE,message=FALSE}
+library(ggplot2)
+library(reshape2)
+vg <-read.csv("vgsalesfrac.csv")
+
+df<-melt(vg,id.vars = "Year", measure.vars = c("Action", "Adventure", "Fighting", "Misc", "Platform", "Puzzle", "Racing", "Role.Playing","Shooter","Simulation","Sports","Strategy"))
+
+p <- ggplot(df, aes(Year,value)) + xlab("Year") + ylab("Sales") + labs(title="              Fraction of Total Video Game Sales by Genre") + scale_fill_discrete(name="Genre") 
+
+area_chart <- p + geom_area(aes(fill = variable), position = 'stack')
+print(area_chart)
+```
+
