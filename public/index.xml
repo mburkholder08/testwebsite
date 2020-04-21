@@ -17,7 +17,8 @@
       <pubDate>Tue, 21 Apr 2020 00:00:00 +0000</pubDate>
       
       <guid>/2020/04/21/data-visualization-video-game-sales/</guid>
-      <description></description>
+      <description>Data taken from https://www.kaggle.com/gregorut/videogamesales
+## Warning: package &amp;#39;ggplot2&amp;#39; was built under R version 3.6.2</description>
     </item>
     
     <item>
