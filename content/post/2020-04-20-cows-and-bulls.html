@@ -1,0 +1,135 @@
+---
+title: Cows And Bulls
+author: ''
+date: '2020-04-20'
+slug: cows-and-bulls
+categories: []
+tags: []
+---
+
+
+
+<p>This is my take on the classic “Cows and Bulls” game written in R.</p>
+<pre class="r"><code>bulls_and_cows &lt;-function() {
+  
+  generate_computer_vector &lt;- function() {
+    computer_sample &lt;- sample(0:9,4)                                      #generates computer vector
+    return(computer_sample)
+  }
+  
+  get_guess &lt;- function() {
+    user_choice_is_good &lt;- FALSE
+    
+    h &lt;- 0
+    
+    while (user_choice_is_good==FALSE){
+      
+      if (i == i) {
+        print(paste(&quot;You have&quot;, 11 - i, &quot;guesses remaining.&quot;))
+      }
+      numbers_string &lt;- readline(&quot;Please enter four numbers &gt;&quot;)           #prompts user to make a guess
+      user_choice &lt;- as.integer(unlist(strsplit(numbers_string,&quot; &quot;)))
+      
+      user_choice_is_good &lt;- TRUE
+      
+      
+      if (length(user_choice) &gt; length(unique(user_choice))) {
+        message(&quot;Incorrect input. Please only use a number once.&quot;)      #check to make sure there are no repeated numbers
+        h &lt;- h + 1
+        user_choice_is_good &lt;-FALSE
+        
+      }
+      if (any(is.na(user_choice)) || any(user_choice &lt; 0) || any(user_choice &gt; 9)) {
+        message(&quot;Incorrect input. Please enter integer values between 0 and 9.&quot;)           #check to make sure the value is numeric between 0 and 9 inclusive
+        h &lt;- h + 1
+        user_choice_is_good &lt;-FALSE
+        
+      }
+      
+      if (!length(user_choice) == 4) {
+        message(&quot;Incorrect input. Please enter four integer values.&quot;)                       #check to make sure 4 numbers are input
+        h &lt;- h + 1
+        user_choice_is_good &lt;- FALSE
+        
+      }
+      if(h == 3) {
+        stop(&quot;Error. You have made 3 mistakes in a row. The game is over.&quot;)                 #ends the game after 3 consecutive mistakes
+      }
+    }
+    
+    
+    return(user_choice)
+  }
+  
+  number_bulls &lt;- function(user_choice,computer_sample){
+    bulls &lt;- sum(user_choice == computer_sample)                                             #calculates bulls
+    return (bulls)
+  }
+  
+  number_cows &lt;- function(user_choice,computer_sample,test_bulls) {
+    cows &lt;- sum(user_choice %in% computer_sample) - test_bulls                               #calculates cows
+    return (cows)
+  }
+  
+  
+  number_bulls_and_cows &lt;- function(user_choice_inside,computer_sample_inside) {
+    
+    bulls &lt;- number_bulls(user_choice_inside, computer_sample_inside)
+    
+    cows &lt;- number_cows(user_choice_inside,computer_sample_inside,bulls)
+    
+    return(c(bulls,cows))
+  }
+  
+  do_response &lt;- function(user_choice_outside,computer_sample) {
+    
+    k &lt;- 0
+    while (k &lt; 5) {
+      if (get_bulls_and_cows[1] == k) {                                              #prints number of bulls
+        print(paste(&quot;There are &quot;, k, &quot;bulls.&quot;))
+      }
+      k &lt;- k + 1
+    }
+    
+    
+    j &lt;- 0
+    while (j &lt; 5) {
+      if (get_bulls_and_cows[2] == j) {
+        print(paste(&quot;There are &quot;, j, &quot;cows.&quot;))                                         #prints number of cows
+      }
+      j &lt;- j + 1
+    }
+    
+    
+    if (i == 10 &amp;&amp; user_choice_outside != computer_sample) {
+      print(&quot;You are out of guesses! The game is over.&quot;)
+      cat(&quot;The correct answer was:&quot;,computer_sample)
+    }
+    
+    if(user_choice_outside[1] == computer_sample[1] &amp;&amp; user_choice_outside[2] == computer_sample[2] &amp;&amp; user_choice_outside[3] == computer_sample[3] &amp;&amp; user_choice_outside[4] == computer_sample[4]) {
+      print(paste(&quot;It took you&quot;, i, &quot;guesses to win this game.&quot;))
+    }
+    
+  }
+  
+  
+  ### Stuff happens below here
+  
+  i &lt;- 1
+  
+  computer_sample &lt;- generate_computer_vector()
+  
+  while (i &lt; 11) {
+    user_choice_outside &lt;- get_guess()
+    get_bulls_and_cows &lt;- number_bulls_and_cows(user_choice_outside,computer_sample)
+    get_response &lt;- do_response(user_choice_outside,computer_sample)
+    
+    i &lt;- i + 1
+    
+    if (get_bulls_and_cows[1] == 4) {
+      break
+    }
+  }
+  
+  
+}</code></pre>

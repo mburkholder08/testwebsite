@@ -12,12 +12,13 @@
     
     
     <item>
-      <title>mcdonalds</title>
-      <link>/2020/03/02/mcdonalds/</link>
-      <pubDate>Mon, 02 Mar 2020 00:00:00 +0000</pubDate>
+      <title>Cows And Bulls</title>
+      <link>/2020/04/20/cows-and-bulls/</link>
+      <pubDate>Mon, 20 Apr 2020 00:00:00 +0000</pubDate>
       
-      <guid>/2020/03/02/mcdonalds/</guid>
-      <description></description>
+      <guid>/2020/04/20/cows-and-bulls/</guid>
+      <description>This is my take on the classic “Cows and Bulls” game written in R.
+bulls_and_cows &amp;lt;-function() {generate_computer_vector &amp;lt;- function() {computer_sample &amp;lt;- sample(0:9,4) #generates computer vectorreturn(computer_sample)}get_guess &amp;lt;- function() {user_choice_is_good &amp;lt;- FALSEh &amp;lt;- 0while (user_choice_is_good==FALSE){if (i == i) {print(paste(&amp;quot;You have&amp;quot;, 11 - i, &amp;quot;guesses remaining.&amp;quot;))}numbers_string &amp;lt;- readline(&amp;quot;Please enter four numbers &amp;gt;&amp;quot;) #prompts user to make a guessuser_choice &amp;lt;- as.</description>
     </item>
     
     <item>
@@ -26,8 +27,7 @@
       <pubDate>Mon, 02 Mar 2020 00:00:00 +0000</pubDate>
       
       <guid>/2020/03/02/post-title/</guid>
-      <description>R MarkdownMissouri sucks at footballGo Gators
-PositionQBRBTEWR{&#34;map&#34;: {&#34;QB&#34;: [&#34;4&#34;, &#34;11&#34;, &#34;22&#34;, &#34;23&#34;, &#34;31&#34;, &#34;33&#34;, &#34;34&#34;, &#34;43&#34;, &#34;46&#34;, &#34;47&#34;, &#34;54&#34;, &#34;56&#34;, &#34;57&#34;, &#34;58&#34;, &#34;77&#34;, &#34;79&#34;, &#34;84&#34;, &#34;103&#34;, &#34;104&#34;, &#34;119&#34;, &#34;120&#34;, &#34;127&#34;, &#34;128&#34;, &#34;153&#34;, &#34;160&#34;, &#34;166&#34;, &#34;177&#34;, &#34;179&#34;, &#34;195&#34;, &#34;212&#34;, &#34;220&#34;, &#34;232&#34;, &#34;240&#34;, &#34;242&#34;, &#34;</description>
+      <description>R MarkdownPositionQBRBTEWR{&#34;map&#34;: {&#34;QB&#34;: [&#34;4&#34;, &#34;11&#34;, &#34;22&#34;, &#34;23&#34;, &#34;31&#34;, &#34;33&#34;, &#34;34&#34;, &#34;43&#34;, &#34;46&#34;, &#34;47&#34;, &#34;54&#34;, &#34;56&#34;, &#34;57&#34;, &#34;58&#34;, &#34;77&#34;, &#34;79&#34;, &#34;84&#34;, &#34;103&#34;, &#34;104&#34;, &#34;119&#34;, &#34;120&#34;, &#34;127&#34;, &#34;128&#34;, &#34;153&#34;, &#34;160&#34;, &#34;166&#34;, &#34;177&#34;, &#34;179&#34;, &#34;195&#34;, &#34;212&#34;, &#34;220&#34;, &#34;232&#34;, &#34;240&#34;, &#34;242&#34;, &#34;244&#34;, &#34;264&#34;, &#34;277&#34;, &#34;285&#34;, &#34;286&#34;, &#34;289&#34;, &#34;</description>
     </item>
     
     <item>
