@@ -12,6 +12,79 @@ knitr::opts_chunk$set(collapse = TRUE)
 ```
 
 ```{r}
+library(highcharter)
+library(data.table)
+library(stringr)
+library(dplyr)
+library(noncensus)
+data("uscountygeojson")
+data(zip_codes)
+data(counties)
 
+##load and merge the data sets
+df <- fread('convertcsv.csv', colClasses = "character")
+df$zip <- substr(df$zip, 1, 5)
+a<-df[,list(stores=length(storeNumber)), by=zip]
+setDT(zip_codes)
+setkey(zip_codes, zip)
+setkey(a, zip)
+b<-merge(zip_codes, a, all=TRUE)
+b[is.na(b)] <- 0
+c<-b[,list(stores=sum(stores)), by=fips]
+
+state_fips  = as.numeric(as.character(counties$state_fips))
+county_fips = as.numeric(as.character(counties$county_fips))    
+counties$fips = state_fips*1000+county_fips    
+zip_codes$fips =  as.numeric(as.character(zip_codes$fips))
+setDT(counties)
+setkey(counties, fips)
+setkey(c, fips)
+d<-merge(counties, c, all.x=TRUE)
+d[d == 0] <- NA
+
+d <- d %>% 
+  mutate(CODE = paste("us",
+                      tolower(state),
+                      str_pad(county_fips, width = 3, pad = "0"),
+                      sep = "-"))
+d <- d[, tail(seq(ncol(d)), -560)]
+
+##Map #1
+highchart() %>% 
+  hc_title(text = "MCD Stores by County") %>% 
+  hc_add_series_map(map = uscountygeojson, df = d,
+                    value = "stores", joinBy = c("code", "CODE"),
+                    name = "Number of Stores", borderWidth = 0.5) %>% 
+  hc_colorAxis(dataClasses = color_classes(c(seq(0, 10, by = 2), 75))) %>% 
+  hc_legend(layout = "vertical", reversed = TRUE,
+            floating = TRUE, align = "right") %>% 
+  hc_mapNavigation(enabled = TRUE, align = "right") %>% 
+  hc_tooltip(valueDecimals = 0)
+  
+##Map 2
+d$stores <- as.numeric(d$stores)
+d$population <- as.numeric(d$population)
+d$popstores <- d$stores/d$population
+d$popstores <- d$popstores*10000
+
+highchart() %>% 
+  hc_title(text = "MCD Stores per 10,000 Residents") %>% 
+  hc_add_series_map(map = uscountygeojson, df = d,
+                    value = "popstores", joinBy = c("code", "CODE"),
+                    name = "Population to stores", borderWidth = 0.5) %>% 
+  hc_colorAxis(dataClasses = color_classes(c(seq(0, 1, by = .2), 4))) %>% 
+  hc_legend(layout = "vertical", reversed = TRUE,
+            floating = TRUE, align = "right") %>% 
+  hc_mapNavigation(enabled = TRUE, align = "right") %>% 
+  hc_tooltip(valueDecimals = 3)
+  
+##Map 3
+library(leaflet)
+df$longitude <- as.numeric(df$longitude)
+df$latitude <- as.numeric(df$latitude)
+
+leaflet(df) %>% 
+  addTiles() %>% 
+  addMarkers(clusterOptions = markerClusterOptions(), popup=paste("<b>Address:</b> ", df$address, "<br>", "<b>City:</b>", df$city, "<br>", "<b>State:</b>", df$state))
 ```
 
